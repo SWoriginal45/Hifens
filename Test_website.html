@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test website - Build v6.6</title>
+  <style>
+    :root {
+      --bg-color: #e5e5e5;
+      --wrapper-bg: white;
+      --text-color: black;
+      --box-header-bg: #ddd;
+      --nav-bg: #f2f2f2;
+      --border-color: #999;
+      --link-color: #0000cc;
+      --topbar-c1: #cc0000; 
+      --topbar-c2: #ff6600;
+    }
+
+    body.dark-mode {
+      --bg-color: #1a1a1a;
+      --wrapper-bg: #2d2d2d;
+      --text-color: #eeeeee;
+      --box-header-bg: #444;
+      --nav-bg: #333;
+      --border-color: #555;
+      --link-color: #8888ff;
+    }
+
+    * { 
+      font-family: 'Comic Sans MS', 'Comic Sans', cursive !important; 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+
+    body {
+      background-color: var(--bg-color);
+      background-image: url('https://tr.rbxcdn.com/180DAY-e5aa3da117aad009a378e1e8912e248a/768/432/Model/Webp/noFilter');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: var(--text-color);
+      transition: background-image 0.5s ease;
+    }
+
+    .wrapper {
+      width: 800px;
+      max-width: 100%;
+      margin: 0 auto;
+      background: var(--wrapper-bg);
+      border: 1px solid var(--border-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+
+    .topbar {
+      background: linear-gradient(to right, var(--topbar-c1), var(--topbar-c2));
+      color: white;
+      padding: 15px;
+      font-size: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav { 
+      background-color: var(--nav-bg); 
+      border-bottom: 1px solid var(--border-color); 
+      padding: 10px; 
+      display: flex; 
+      gap: 20px; 
+    }
+
+    .nav a { 
+      text-decoration: underline; 
+      color: var(--link-color); 
+      font-size: 13px; 
+      cursor: pointer; 
+      font-weight: bold; 
+    }
+
+    .content { 
+      padding: 25px; 
+      flex: 1; 
+    }
+
+    .box { 
+      border: 1px solid var(--border-color); 
+      margin-bottom: 25px; 
+      background: var(--wrapper-bg); 
+    }
+
+    .box-header { 
+      background-color: var(--box-header-bg); 
+      padding: 10px; 
+      font-weight: bold; 
+      border-bottom: 1px solid var(--border-color); 
+      font-size: 14px; 
+    }
+
+    .box-content { 
+      padding: 15px; 
+    }
+
+    .badge-container { 
+      display: flex; 
+      gap: 10px; 
+      flex-wrap: wrap; 
+      margin-top: 10px; 
+    }
+
+    .badge { 
+      padding: 4px 10px; 
+      border: 1px solid #999; 
+      font-size: 11px; 
+      font-weight: bold; 
+      background: #f0f0f0; 
+      color: black; 
+      text-transform: uppercase; 
+    }
+
+    .badge-admin { 
+      background: #ff0000; 
+      color: #ffffff; 
+      border-color: #cc0000; 
+    }
+
+    .profile-layout { 
+      display: flex; 
+      gap: 30px; 
+    }
+
+    .profile-sidebar { 
+      width: 200px; 
+      text-align: center; 
+    }
+
+    .avatar-main { 
+      width: 130px; 
+      height: 130px; 
+      background: #ccc; 
+      border: 2px solid #888; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-size: 50px; 
+      margin: 0 auto 15px auto; 
+      overflow: hidden; 
+    }
+    
+    .inventory-grid { 
+      display: grid; 
+      grid-template-columns: repeat(4, 1fr); 
+      gap: 10px; 
+    }
+
+    .inv-slot { 
+      aspect-ratio: 1; 
+      border: 1px dotted #bbb; 
+      background: rgba(0,0,0,0.02); 
+    }
+
+    .settings-section { 
+      margin-bottom: 20px; 
+      padding-bottom: 15px; 
+      border-bottom: 1px solid #eee; 
+    }
+
+    .settings-label { 
+      font-weight: bold; 
+      display: block; 
+      margin-bottom: 8px; 
+      font-size: 14px; 
+    }
+    
+    .theme-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+      gap: 8px; 
+    }
+
+    input[type="text"], 
+    input[type="password"], 
+    textarea { 
+      border: 1px solid var(--border-color); 
+      padding: 8px; 
+      width: 100%; 
+      background: var(--wrapper-bg); 
+      color: var(--text-color); 
+      margin-top: 5px;
+      margin-bottom: 10px;
+    }
+
+    .btn { 
+      background: #f0f0f0; 
+      border: 1px solid #999; 
+      padding: 6px 12px; 
+      cursor: pointer; 
+      font-weight: bold; 
+      font-size: 11px; 
+      color: black; 
+      margin-right: 5px;
+    }
+
+    .btn:hover {
+      background: #e0e0e0;
+    }
+    
+    .page { display: none; }
+    .active { display: block; }
+
+    .footer { 
+      text-align: center; 
+      font-size: 11px; 
+      padding: 25px; 
+      color: #888; 
+      border-top: 1px solid var(--border-color); 
+      background: var(--nav-bg); 
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+  <header class="topbar">
+    <div class="logo">Test website</div>
+    <div style="font-size: 14px; font-weight: bold;">
+      <span id="helloText">Hello, Guest!</span> | <span id="money">0</span> squar
+    </div>
+  </header>
+
+  <nav class="nav">
+    <a onclick="navigateTo('home')">Home</a>
+    <a onclick="navigateTo('login')">Login</a>
+    <a onclick="navigateTo('signup')">Signup</a>
+    <a onclick="navigateTo('accounts')">Accounts</a>
+    <a onclick="navigateTo('settings')">Settings</a>
+  </nav>
+
+  <main class="content">
+    <section id="tab-home" class="page active">
+      <div class="box">
+        <div class="box-header">News</div>
+        <div class="box-content">v6.6: Estrutura expandida e segura!</div>
+      </div>
+    </section>
+
+    <section id="tab-login" class="page">
+      <div class="box">
+        <div class="box-header">Login</div>
+        <div class="box-content">
+          <form onsubmit="handleLogin(); return false;">
+            User:
+            <input type="text" id="lUser" required>
+            Pass:
+            <input type="password" id="lPass" required>
+            <button type="submit" class="btn">Login</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-signup" class="page">
+      <div class="box">
+        <div class="box-header">Signup</div>
+        <div class="box-content">
+          <form onsubmit="handleSignup(); return false;">
+            User:
+            <input type="text" id="sUser" required>
+            Pass:
+            <input type="password" id="sPass" required>
+            <button type="submit" class="btn">Register</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-accounts" class="page">
+      <div class="box">
+        <div class="box-header">Members</div>
+        <div id="accountsList" class="box-content"></div>
+      </div>
+    </section>
+
+    <section id="tab-profile" class="page">
+      <div class="box">
+        <div class="box-header">Profile</div>
+        <div class="box-content profile-layout">
+          <div class="profile-sidebar">
+            <div class="avatar-main" id="pAvatar">?</div>
+            <h2 id="pUsername">User</h2>
+            <div id="pBio" style="font-size:12px; font-style:italic; margin-top:10px;"></div>
+            <div id="pID" style="color:red; font-weight:bold; font-size:11px; margin-top:15px;">ID: 0</div>
+          </div>
+          <div style="flex:1;">
+            <div class="box">
+              <div class="box-header">Player Badges</div>
+              <div class="badge-container" id="pBadges" style="padding:15px;"></div>
+            </div>
+            <div class="box">
+              <div class="box-header">Inventory</div>
+              <div class="inventory-grid" style="padding:15px;">
+                <div class="inv-slot"></div>
+                <div class="inv-slot"></div>
+                <div class="inv-slot"></div>
+                <div class="inv-slot"></div>
+                <div class="inv-slot"></div>
+                <div class="inv-slot"></div>
+                <div class="inv-slot"></div>
+                <div class="inv-slot"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-settings" class="page">
+      <div class="box">
+        <div class="box-header">Account Management</div>
+        <div id="settingsContent" class="box-content"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">Test website © 2006-2026</footer>
+</div>
+
+<script>
+  const DB_KEY = "FINAL_STABLE_V100";
+  let sessionUser = localStorage.getItem('active_session') || null;
+
+  function getDB() { 
+    const data = localStorage.getItem(DB_KEY); 
+    return data ? JSON.parse(data) : []; 
+  }
+
+  function saveDB(data) { 
+    localStorage.setItem(DB_KEY, JSON.stringify(data)); 
+  }
+
+  window.onload = () => { 
+    checkUrlHash(); 
+    updateUI(); 
+    applyTheme(localStorage.getItem('site_theme') || 'light');
+    const sky = localStorage.getItem('custom_sky'); 
+    if(sky) mudarCeu(sky);
+    const c1 = localStorage.getItem('topbar_c1') || '#cc0000';
+    const c2 = localStorage.getItem('topbar_c2') || '#ff6600';
+    mudarCor(c1, 1); 
+    mudarCor(c2, 2);
+  };
+
+  function mudarCeu(url) { 
+    document.body.style.backgroundImage = "url('" + url + "')"; 
+    localStorage.setItem('custom_sky', url); 
+  }
+
+  function mudarCor(cor, idx) { 
+    document.documentElement.style.setProperty('--topbar-c' + idx, cor); 
+    localStorage.setItem('topbar_c' + idx, cor); 
+  }
+
+  function applyTheme(m) { 
+    document.body.classList.toggle('dark-mode', m === 'dark'); 
+    localStorage.setItem('site_theme', m); 
+  }
+
+  window.onhashchange = checkUrlHash;
+
+  function checkUrlHash() {
+    const h = window.location.hash;
+    if (h.startsWith('#profile?id=')) openProfileById(h.split('=')[1]);
+    else navigateTo(h.replace('#', '') || 'home', false);
+  }
+
+  function navigateTo(tabId, updateHash = true) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const t = document.getElementById('tab-' + tabId);
+    if (t) t.classList.add('active');
+    if (updateHash) window.location.hash = tabId;
+    if (tabId === 'accounts') renderAccounts();
+    if (tabId === 'settings') renderSettings();
+  }
+
+  function handleSignup() {
+    const u = document.getElementById('sUser').value.trim();
+    const p = document.getElementById('sPass').value;
+    let db = getDB();
+    if (db.find(x => x.user.toLowerCase() === u.toLowerCase())) return alert("Taken!");
+    db.push({ id: db.length + 1, user: u, pass: p, bio: "" });
+    saveDB(db); 
+    sessionUser = u; 
+    localStorage.setItem('active_session', u);
+    updateUI(); 
+    navigateTo('home');
+  }
+
+  function handleLogin() {
+    const u = document.getElementById('lUser').value.trim();
+    const p = document.getElementById('lPass').value;
+    const user = getDB().find(x => x.user === u && x.pass === p);
+    if (user) { 
+      sessionUser = u; 
+      localStorage.setItem('active_session', u); 
+      updateUI(); 
+      navigateTo('home'); 
+    } else {
+      alert("Wrong!");
+    }
+  }
+
+  function updateUI() {
+    const user = getDB().find(x => x.user === sessionUser);
+    document.getElementById('helloText').innerText = user ? "Hello, " + user.user + "!" : "Hello, Guest!";
+    document.getElementById('money').innerText = user ? "100" : "0";
+  }
+
+  function renderAccounts() {
+    const container = document.getElementById('accountsList');
+    const db = getDB(); 
+    container.innerHTML = "";
+    db.forEach(acc => {
+      container.innerHTML += `
+        <div class="user-card">
+          <div class="avatar-mini">${acc.user[0].toUpperCase()}</div>
+          <div>
+            <span style="color:blue; text-decoration:underline; cursor:pointer; font-weight:bold;" 
+                  onclick="window.location.hash='profile?id=${acc.id}'">${acc.user}</span>
+            <div style="font-size:10px; color:red; font-weight:bold;">ID: ${acc.id}</div>
+          </div>
+        </div>`;
+    });
+  }
+
+  function openProfileById(id) {
+    const u = getDB().find(x => x.id == id);
+    if (!u) return navigateTo('home');
+    document.getElementById('pUsername').innerText = u.user;
+    document.getElementById('pID').innerText = "ID: " + u.id;
+    document.getElementById('pBio').innerText = u.bio || "No bio set.";
+    document.getElementById('pAvatar').innerText = u.user[0].toUpperCase();
+    const bContainer = document.getElementById('pBadges');
+    
+    // LOGICA DO ID 1
+    if (parseInt(u.id) === 1) {
+      bContainer.innerHTML = '<div class="badge badge-admin">Admin</div>';
+    } else {
+      bContainer.innerHTML = '<div class="badge">Player</div>';
+    }
+    
+    navigateTo('profile', false);
+  }
+
+  function renderSettings() {
+    const container = document.getElementById('settingsContent');
+    const u = getDB().find(x => x.user === sessionUser);
+    if (!u) { 
+      container.innerHTML = "Login required."; 
+      return; 
+    }
+    const c1 = localStorage.getItem('topbar_c1') || '#cc0000';
+    const c2 = localStorage.getItem('topbar_c2') || '#ff6600';
+
+    container.innerHTML = `
+      <div class="settings-section">
+        <span class="settings-label">Personal Quote</span>
+        <textarea id="bioInput" style="height:60px;">${u.bio}</textarea>
+        <button class="btn" onclick="saveSettings()">Update Bio</button>
+      </div>
+      <div class="settings-section">
+        <span class="settings-label">Topbar Gradient</span>
+        <input type="color" value="${c1}" oninput="mudarCor(this.value, 1)">
+        <input type="color" value="${c2}" oninput="mudarCor(this.value, 2)">
+      </div>
+      <div class="settings-section">
+        <span class="settings-label">Appearance</span>
+        <button class="btn" onclick="applyTheme('light')">Light</button>
+        <button class="btn" onclick="applyTheme('dark')">Dark</button>
+      </div>
+      <div class="settings-section">
+        <span class="settings-label">Skybox Themes</span>
+        <div class="theme-grid">
+          <button class="btn" onclick="mudarCeu('https://tr.rbxcdn.com/180DAY-e5aa3da117aad009a378e1e8912e248a/768/432/Model/Webp/noFilter')">Default</button>
+          <button class="btn" onclick="mudarCeu('https://static.wikia.nocookie.net/roblox/images/8/8a/Skybox_-_Alien_Red.png')">Alien Red</button>
+          <button class="btn" onclick="mudarCeu('https://static.wikia.nocookie.net/roblox/images/9/9b/Winterness.png')">Winter</button>
+          <button class="btn" onclick="mudarCeu('https://static.wikia.nocookie.net/roblox/images/5/5d/Skybox_-_WallsOfAutumn.png')">Autumn</button>
+          <button class="btn" onclick="mudarCeu('https://static.wikia.nocookie.net/roblox/images/1/1f/BrokenSky.png')">Broken Sky</button>
+        </div>
+      </div>
+      <button class="btn" style="color:red; margin-top:10px;" onclick="logout()">Logout</button>
+    `;
+  }
+
+  function saveSettings() {
+    let db = getDB();
+    const idx = db.findIndex(x => x.user === sessionUser);
+    db[idx].bio = document.getElementById('bioInput').value;
+    saveDB(db); 
+    alert("Saved!");
+  }
+
+  function logout() { 
+    localStorage.removeItem('active_session'); 
+    location.reload(); 
+  }
+</script>
+</body>
+</html>
