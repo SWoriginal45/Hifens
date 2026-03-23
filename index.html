@@ -329,184 +329,191 @@
   <footer class="footer">Test website © 2006-2026</footer>
 </div>
 
-<script>
-  const DB_KEY = "FINAL_STABLE_V100";
-  let sessionUser = localStorage.getItem('active_session') || null;
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
-  function getDB() { 
-    const data = localStorage.getItem(DB_KEY); 
-    return data ? JSON.parse(data) : []; 
+const firebaseConfig = {
+  apiKey: "AIzaSyBp_JUN0fQBuoBSeDxTi4uVpRxFOQRaXL4",
+  authDomain: "hifens.firebaseapp.com",
+  projectId: "hifens",
+  storageBucket: "hifens.firebasestorage.app",
+  messagingSenderId: "438044966500",
+  appId: "1:438044966500:web:f1044bcba3c185f72ba971"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let sessionUser = localStorage.getItem('active_session') || null;
+
+window.onload = () => { 
+  checkUrlHash(); 
+  updateUI(); 
+};
+
+window.onhashchange = checkUrlHash;
+
+function checkUrlHash() {
+  const h = window.location.hash;
+  if (h.startsWith('#profile?id=')) openProfileById(h.split('=')[1]);
+  else navigateTo(h.replace('#', '') || 'home', false);
+}
+
+function navigateTo(tabId, updateHash = true) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const t = document.getElementById('tab-' + tabId);
+  if (t) t.classList.add('active');
+  if (updateHash) window.location.hash = tabId;
+  if (tabId === 'accounts') renderAccounts();
+  if (tabId === 'settings') renderSettings();
+}
+
+// SIGNUP
+async function handleSignup() {
+  const u = document.getElementById('sUser').value.trim();
+  const p = document.getElementById('sPass').value;
+
+  if (p.length < 4) {
+    alert("Senha muito curta!");
+    return;
   }
 
-  function saveDB(data) { 
-    localStorage.setItem(DB_KEY, JSON.stringify(data)); 
+  const q = query(collection(db, "users"), where("user", "==", u));
+  const snap = await getDocs(q);
+
+  if (!snap.empty) {
+    alert("Taken!");
+    return;
   }
 
-  window.onload = () => { 
-    checkUrlHash(); 
-    updateUI(); 
-    applyTheme(localStorage.getItem('site_theme') || 'light');
-    const sky = localStorage.getItem('custom_sky'); 
-    if(sky) mudarCeu(sky);
-    const c1 = localStorage.getItem('topbar_c1') || '#cc0000';
-    const c2 = localStorage.getItem('topbar_c2') || '#ff6600';
-    mudarCor(c1, 1); 
-    mudarCor(c2, 2);
-  };
+  await addDoc(collection(db, "users"), {
+    user: u,
+    pass: p,
+    bio: "",
+    money: 100
+  });
 
-  function mudarCeu(url) { 
-    document.body.style.backgroundImage = "url('" + url + "')"; 
-    localStorage.setItem('custom_sky', url); 
+  sessionUser = u;
+  localStorage.setItem('active_session', u);
+
+  updateUI();
+  navigateTo('home');
+}
+
+// LOGIN
+async function handleLogin() {
+  const u = document.getElementById('lUser').value.trim();
+  const p = document.getElementById('lPass').value;
+
+  const q = query(collection(db, "users"),
+    where("user", "==", u),
+    where("pass", "==", p)
+  );
+
+  const snap = await getDocs(q);
+
+  if (snap.empty) {
+    alert("Wrong!");
+    return;
   }
 
-  function mudarCor(cor, idx) { 
-    document.documentElement.style.setProperty('--topbar-c' + idx, cor); 
-    localStorage.setItem('topbar_c' + idx, cor); 
+  sessionUser = u;
+  localStorage.setItem('active_session', u);
+
+  updateUI();
+  navigateTo('home');
+}
+
+// UI
+async function updateUI() {
+  if (!sessionUser) {
+    document.getElementById('helloText').innerText = "Hello, Guest!";
+    document.getElementById('money').innerText = "0";
+    return;
   }
 
-  function applyTheme(m) { 
-    document.body.classList.toggle('dark-mode', m === 'dark'); 
-    localStorage.setItem('site_theme', m); 
-  }
+  const q = query(collection(db, "users"), where("user", "==", sessionUser));
+  const snap = await getDocs(q);
 
-  window.onhashchange = checkUrlHash;
+  snap.forEach(doc => {
+    const data = doc.data();
+    document.getElementById('helloText').innerText = "Hello, " + data.user + "!";
+    document.getElementById('money').innerText = data.money || 0;
+  });
+}
 
-  function checkUrlHash() {
-    const h = window.location.hash;
-    if (h.startsWith('#profile?id=')) openProfileById(h.split('=')[1]);
-    else navigateTo(h.replace('#', '') || 'home', false);
-  }
+// ACCOUNTS
+async function renderAccounts() {
+  const container = document.getElementById('accountsList');
+  container.innerHTML = "";
 
-  function navigateTo(tabId, updateHash = true) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const t = document.getElementById('tab-' + tabId);
-    if (t) t.classList.add('active');
-    if (updateHash) window.location.hash = tabId;
-    if (tabId === 'accounts') renderAccounts();
-    if (tabId === 'settings') renderSettings();
-  }
+  const snap = await getDocs(collection(db, "users"));
 
-  function handleSignup() {
-    const u = document.getElementById('sUser').value.trim();
-    const p = document.getElementById('sPass').value;
-    let db = getDB();
-    if (db.find(x => x.user.toLowerCase() === u.toLowerCase())) return alert("Taken!");
-    db.push({ id: db.length + 1, user: u, pass: p, bio: "" });
-    saveDB(db); 
-    sessionUser = u; 
-    localStorage.setItem('active_session', u);
-    updateUI(); 
-    navigateTo('home');
-  }
+  let i = 1;
 
-  function handleLogin() {
-    const u = document.getElementById('lUser').value.trim();
-    const p = document.getElementById('lPass').value;
-    const user = getDB().find(x => x.user === u && x.pass === p);
-    if (user) { 
-      sessionUser = u; 
-      localStorage.setItem('active_session', u); 
-      updateUI(); 
-      navigateTo('home'); 
-    } else {
-      alert("Wrong!");
-    }
-  }
+  snap.forEach(doc => {
+    const acc = doc.data();
 
-  function updateUI() {
-    const user = getDB().find(x => x.user === sessionUser);
-    document.getElementById('helloText').innerText = user ? "Hello, " + user.user + "!" : "Hello, Guest!";
-    document.getElementById('money').innerText = user ? "100" : "0";
-  }
-
-  function renderAccounts() {
-    const container = document.getElementById('accountsList');
-    const db = getDB(); 
-    container.innerHTML = "";
-    db.forEach(acc => {
-      container.innerHTML += `
-        <div class="user-card">
-          <div class="avatar-mini">${acc.user[0].toUpperCase()}</div>
-          <div>
-            <span style="color:blue; text-decoration:underline; cursor:pointer; font-weight:bold;" 
-                  onclick="window.location.hash='profile?id=${acc.id}'">${acc.user}</span>
-            <div style="font-size:10px; color:red; font-weight:bold;">ID: ${acc.id}</div>
-          </div>
-        </div>`;
-    });
-  }
-
-  function openProfileById(id) {
-    const u = getDB().find(x => x.id == id);
-    if (!u) return navigateTo('home');
-    document.getElementById('pUsername').innerText = u.user;
-    document.getElementById('pID').innerText = "ID: " + u.id;
-    document.getElementById('pBio').innerText = u.bio || "No bio set.";
-    document.getElementById('pAvatar').innerText = u.user[0].toUpperCase();
-    const bContainer = document.getElementById('pBadges');
-    
-    // LOGICA DO ID 1
-    if (parseInt(u.id) === 1) {
-      bContainer.innerHTML = '<div class="badge badge-admin">Admin</div>';
-    } else {
-      bContainer.innerHTML = '<div class="badge">Player</div>';
-    }
-    
-    navigateTo('profile', false);
-  }
-
-  function renderSettings() {
-    const container = document.getElementById('settingsContent');
-    const u = getDB().find(x => x.user === sessionUser);
-    if (!u) { 
-      container.innerHTML = "Login required."; 
-      return; 
-    }
-    const c1 = localStorage.getItem('topbar_c1') || '#cc0000';
-    const c2 = localStorage.getItem('topbar_c2') || '#ff6600';
-
-    container.innerHTML = `
-      <div class="settings-section">
-        <span class="settings-label">Personal Quote</span>
-        <textarea id="bioInput" style="height:60px;">${u.bio}</textarea>
-        <button class="btn" onclick="saveSettings()">Update Bio</button>
-      </div>
-      <div class="settings-section">
-        <span class="settings-label">Topbar Gradient</span>
-        <input type="color" value="${c1}" oninput="mudarCor(this.value, 1)">
-        <input type="color" value="${c2}" oninput="mudarCor(this.value, 2)">
-      </div>
-      <div class="settings-section">
-        <span class="settings-label">Appearance</span>
-        <button class="btn" onclick="applyTheme('light')">Light</button>
-        <button class="btn" onclick="applyTheme('dark')">Dark</button>
-      </div>
-      <div class="settings-section">
-        <span class="settings-label">Skybox Themes</span>
-        <div class="theme-grid">
-          <button class="btn" onclick="mudarCeu('https://tr.rbxcdn.com/180DAY-e5aa3da117aad009a378e1e8912e248a/768/432/Model/Webp/noFilter')">Default</button>
-          <button class="btn" onclick="mudarCeu('https://static.wikia.nocookie.net/roblox/images/8/8a/Skybox_-_Alien_Red.png')">Alien Red</button>
-          <button class="btn" onclick="mudarCeu('https://static.wikia.nocookie.net/roblox/images/9/9b/Winterness.png')">Winter</button>
-          <button class="btn" onclick="mudarCeu('https://static.wikia.nocookie.net/roblox/images/5/5d/Skybox_-_WallsOfAutumn.png')">Autumn</button>
-          <button class="btn" onclick="mudarCeu('https://static.wikia.nocookie.net/roblox/images/1/1f/BrokenSky.png')">Broken Sky</button>
+    container.innerHTML += `
+      <div class="user-card">
+        <div class="avatar-mini">${acc.user[0].toUpperCase()}</div>
+        <div>
+          <span style="color:blue; text-decoration:underline; cursor:pointer; font-weight:bold;" 
+                onclick="window.location.hash='profile?id=${i}'">${acc.user}</span>
+          <div style="font-size:10px; color:red; font-weight:bold;">ID: ${i}</div>
         </div>
-      </div>
-      <button class="btn" style="color:red; margin-top:10px;" onclick="logout()">Logout</button>
-    `;
+      </div>`;
+    i++;
+  });
+}
+
+// PROFILE
+async function openProfileById(id) {
+  const snap = await getDocs(collection(db, "users"));
+
+  let i = 1;
+
+  snap.forEach(doc => {
+    if (i == id) {
+      const u = doc.data();
+
+      document.getElementById('pUsername').innerText = u.user;
+      document.getElementById('pID').innerText = "ID: " + i;
+      document.getElementById('pBio').innerText = u.bio || "No bio set.";
+      document.getElementById('pAvatar').innerText = u.user[0].toUpperCase();
+
+      const bContainer = document.getElementById('pBadges');
+
+      if (i === 1) {
+        bContainer.innerHTML = '<div class="badge badge-admin">Admin</div>';
+      } else {
+        bContainer.innerHTML = '<div class="badge">Player</div>';
+      }
+
+      navigateTo('profile', false);
+    }
+    i++;
+  });
+}
+
+// SETTINGS (mantido)
+function renderSettings() {
+  const container = document.getElementById('settingsContent');
+  if (!sessionUser) { 
+    container.innerHTML = "Login required."; 
+    return; 
   }
 
-  function saveSettings() {
-    let db = getDB();
-    const idx = db.findIndex(x => x.user === sessionUser);
-    db[idx].bio = document.getElementById('bioInput').value;
-    saveDB(db); 
-    alert("Saved!");
-  }
+  container.innerHTML = `
+    <button class="btn" style="color:red;" onclick="logout()">Logout</button>
+  `;
+}
 
-  function logout() { 
-    localStorage.removeItem('active_session'); 
-    location.reload(); 
-  }
+function logout() { 
+  localStorage.removeItem('active_session'); 
+  location.reload(); 
+}
 </script>
 </body>
 </html>
