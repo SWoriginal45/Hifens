@@ -497,7 +497,7 @@ async function openProfileById(id) {
   });
 }
 
-// SETTINGS (mantido)
+// SETTINGS
 function renderSettings() {
   const container = document.getElementById('settingsContent');
   if (!sessionUser) { 
@@ -514,6 +514,15 @@ function logout() {
   localStorage.removeItem('active_session'); 
   location.reload(); 
 }
+
+// --- CORREÇÃO AQUI ---
+// Expondo as funções do módulo para o escopo global (window)
+// Isso permite que o HTML encontre as funções nos eventos onclick e onsubmit
+window.navigateTo = navigateTo;
+window.handleSignup = handleSignup;
+window.handleLogin = handleLogin;
+window.logout = logout;
+
 </script>
 </body>
 </html>
