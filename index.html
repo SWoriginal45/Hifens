@@ -326,47 +326,10 @@
     </section>
   </main>
 
-  <footer class="footer">Test website © 2006-2026</footer>
+  <footer class="footer">Test website © 2026</footer>
 </div>
-
-  function setTheme(mode) {
-  if (mode === "dark") {
-    document.body.classList.add("dark-mode");
-    localStorage.setItem("theme", "dark");
-  } else {
-    document.body.classList.remove("dark-mode");
-    localStorage.setItem("theme", "light");
-  }
-}
-
-function setBackground() {
-  const url = document.getElementById("bgInput").value;
-  document.body.style.backgroundImage = `url('${url}')`;
-  localStorage.setItem("bg", url);
-}
-
-function setGradient() {
-  const c1 = document.getElementById("color1").value;
-  const c2 = document.getElementById("color2").value;
-
-  document.documentElement.style.setProperty('--topbar-c1', c1);
-  document.documentElement.style.setProperty('--topbar-c2', c2);
-
-  localStorage.setItem("grad1", c1);
-  localStorage.setItem("grad2", c2);
-}
-
-async function saveBio() {
-  const bio = document.getElementById("bioInput").value;
-
-  const snap = await getDocs(query(collection(db, "users"), where("user", "==", sessionUser)));
-
-  snap.forEach(async (docu) => {
-    await updateDoc(doc(db, "users", docu.id), { bio: bio });
-  });
-
-  alert("Bio saved!");
-}
+ 
+<script type="module">
 
 async function saveQuote() {
   const quote = document.getElementById("quoteInput").value;
@@ -379,13 +342,20 @@ async function saveQuote() {
 
   alert("Quote saved!");
 }
-  
-<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  getDocs, 
+  query, 
+  where,
+  updateDoc,
+  doc
+} from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBp_JUN0fQBuoBSeDxTi4uVpRxFOQRaXL4",
+  apiKey: "SUA_KEY",
   authDomain: "hifens.firebaseapp.com",
   projectId: "hifens",
   storageBucket: "hifens.firebasestorage.app",
@@ -401,13 +371,14 @@ let sessionUser = localStorage.getItem('active_session') || null;
 // ---------- START ----------
 window.onload = () => {
   setupNav();
+  applySavedSettings();
   checkUrlHash();
   updateUI();
 };
 
 window.onhashchange = checkUrlHash;
 
-// ---------- NAV FIX ----------
+// ---------- NAV ----------
 function setupNav() {
   document.querySelectorAll(".nav a")[0].onclick = () => navigateTo('home');
   document.querySelectorAll(".nav a")[1].onclick = () => navigateTo('login');
@@ -419,10 +390,7 @@ function setupNav() {
 function checkUrlHash() {
   const h = window.location.hash.replace('#', '');
 
-  if (!h) {
-    navigateTo('home', false);
-    return;
-  }
+  if (!h) return navigateTo('home', false);
 
   if (h.startsWith('profile?id=')) {
     openProfileById(h.split('=')[1]);
@@ -448,23 +416,17 @@ async function handleSignup() {
   const u = document.getElementById('sUser').value.trim();
   const p = document.getElementById('sPass').value;
 
-  if (p.length < 4) {
-    alert("Senha muito curta!");
-    return;
-  }
+  if (p.length < 4) return alert("Senha muito curta!");
 
-  const q = query(collection(db, "users"), where("user", "==", u));
-  const snap = await getDocs(q);
+  const snap = await getDocs(query(collection(db, "users"), where("user", "==", u)));
 
-  if (!snap.empty) {
-    alert("Taken!");
-    return;
-  }
+  if (!snap.empty) return alert("Taken!");
 
   await addDoc(collection(db, "users"), {
     user: u,
     pass: p,
     bio: "",
+    quote: "",
     money: 100
   });
 
@@ -480,17 +442,13 @@ async function handleLogin() {
   const u = document.getElementById('lUser').value.trim();
   const p = document.getElementById('lPass').value;
 
-  const q = query(collection(db, "users"),
+  const snap = await getDocs(query(
+    collection(db, "users"),
     where("user", "==", u),
     where("pass", "==", p)
-  );
+  ));
 
-  const snap = await getDocs(q);
-
-  if (snap.empty) {
-    alert("Wrong!");
-    return;
-  }
+  if (snap.empty) return alert("Wrong!");
 
   sessionUser = u;
   localStorage.setItem('active_session', u);
@@ -507,8 +465,7 @@ async function updateUI() {
     return;
   }
 
-  const q = query(collection(db, "users"), where("user", "==", sessionUser));
-  const snap = await getDocs(q);
+  const snap = await getDocs(query(collection(db, "users"), where("user", "==", sessionUser)));
 
   snap.forEach(doc => {
     const data = doc.data();
@@ -530,13 +487,10 @@ async function renderAccounts() {
     const acc = doc.data();
 
     container.innerHTML += `
-      <div class="user-card">
-        <div class="avatar-mini">${acc.user[0].toUpperCase()}</div>
-        <div>
-          <span style="color:blue; text-decoration:underline; cursor:pointer; font-weight:bold;" 
-            onclick="window.location.hash='profile?id=${i}'">${acc.user}</span>
-          <div style="font-size:10px; color:red; font-weight:bold;">ID: ${i}</div>
-        </div>
+      <div>
+        <span style="color:blue; cursor:pointer;"
+          onclick="window.location.hash='profile?id=${i}'">${acc.user}</span>
+        <div>ID: ${i}</div>
       </div>
     `;
     i++;
@@ -554,17 +508,9 @@ async function openProfileById(id) {
       const u = doc.data();
 
       document.getElementById('pUsername').innerText = u.user;
-      document.getElementById('pID').innerText = "ID: " + i;
-      document.getElementById('pBio').innerText = u.bio || "No bio set.";
+      document.getElementById('pBio').innerText = u.bio || "No bio.";
       document.getElementById('pAvatar').innerText = u.user[0].toUpperCase();
-
-      const bContainer = document.getElementById('pBadges');
-
-      if (i === 1) {
-        bContainer.innerHTML = '<div class="badge badge-admin">Admin</div>';
-      } else {
-        bContainer.innerHTML = '<div class="badge">Player</div>';
-      }
+      document.getElementById('pID').innerText = "ID: " + i;
 
       navigateTo('profile', false);
     }
@@ -574,55 +520,99 @@ async function openProfileById(id) {
 
 // ---------- SETTINGS ----------
 function renderSettings() {
-  const container = document.getElementById('settingsContent');
+  const c = document.getElementById('settingsContent');
 
-  if (!sessionUser) { 
-    container.innerHTML = "Login required."; 
-    return; 
-  }
+  if (!sessionUser) return c.innerHTML = "Login required.";
 
-  container.innerHTML = `
-    <div class="settings-section">
-      <span class="settings-label">Theme</span>
-      <button class="btn" onclick="setTheme('light')">Light</button>
-      <button class="btn" onclick="setTheme('dark')">Dark</button>
-    </div>
+  c.innerHTML = `
+    <button onclick="setTheme('light')">Light</button>
+    <button onclick="setTheme('dark')">Dark</button>
 
-    <div class="settings-section">
-      <span class="settings-label">Background</span>
-      <input type="text" id="bgInput" placeholder="Image URL">
-      <button class="btn" onclick="setBackground()">Apply</button>
-    </div>
+    <input id="bgInput" placeholder="Background URL">
+    <button onclick="setBackground()">Apply BG</button>
 
-    <div class="settings-section">
-      <span class="settings-label">Topbar Gradient</span>
-      <input type="text" id="color1" placeholder="Color 1">
-      <input type="text" id="color2" placeholder="Color 2">
-      <button class="btn" onclick="setGradient()">Apply</button>
-    </div>
+    <input id="color1" placeholder="Color 1">
+    <input id="color2" placeholder="Color 2">
+    <button onclick="setGradient()">Apply Gradient</button>
 
-    <div class="settings-section">
-      <span class="settings-label">Profile Bio</span>
-      <textarea id="bioInput"></textarea>
-      <button class="btn" onclick="saveBio()">Save</button>
-    </div>
+    <textarea id="bioInput"></textarea>
+    <button onclick="saveBio()">Save Bio</button>
 
-    <div class="settings-section">
-      <span class="settings-label">Quote</span>
-      <input type="text" id="quoteInput">
-      <button class="btn" onclick="saveQuote()">Save</button>
-    </div>
+    <input id="quoteInput">
+    <button onclick="saveQuote()">Save Quote</button>
 
-    <div class="settings-section">
-      <button class="btn" style="color:red;" onclick="logout()">Logout</button>
-    </div>
+    <button onclick="logout()">Logout</button>
   `;
 }
 
-// ---------- GLOBAL FIX ----------
+// ---------- SETTINGS FUNCTIONS ----------
+
+  function setTheme(mode) {
+  document.body.classList.toggle("dark-mode", mode === "dark");
+  localStorage.setItem("theme", mode);
+}
+  
+function setBackground() {
+  const url = document.getElementById("bgInput").value;
+  document.body.style.backgroundImage = `url('${url}')`;
+  localStorage.setItem("bg", url);
+}
+
+function setGradient() {
+  const c1 = document.getElementById("color1").value;
+  const c2 = document.getElementById("color2").value;
+
+  document.documentElement.style.setProperty('--topbar-c1', c1);
+  document.documentElement.style.setProperty('--topbar-c2', c2);
+
+  localStorage.setItem("grad1", c1);
+  localStorage.setItem("grad2", c2);
+}
+
+async function saveBio() {
+  const bio = document.getElementById("bioInput").value;
+
+  const snap = await getDocs(query(collection(db, "users"), where("user", "==", sessionUser)));
+
+  snap.forEach(async (d) => {
+    await updateDoc(doc(db, "users", d.id), { bio });
+  });
+
+  alert("Saved!");
+}
+
+// ---------- LOAD SETTINGS ----------
+function applySavedSettings() {
+  const theme = localStorage.getItem("theme");
+  if (theme) setTheme(theme);
+
+  const bg = localStorage.getItem("bg");
+  if (bg) document.body.style.backgroundImage = `url('${bg}')`;
+
+  const g1 = localStorage.getItem("grad1");
+  const g2 = localStorage.getItem("grad2");
+
+  if (g1 && g2) {
+    document.documentElement.style.setProperty('--topbar-c1', g1);
+    document.documentElement.style.setProperty('--topbar-c2', g2);
+  }
+}
+
+// ---------- LOGOUT ----------
+function logout() {
+  localStorage.removeItem('active_session');
+  location.reload();
+}
+
+// ---------- GLOBAL ----------
 window.handleSignup = handleSignup;
 window.handleLogin = handleLogin;
 window.logout = logout;
+window.setTheme = setTheme;
+window.setBackground = setBackground;
+window.setGradient = setGradient;
+window.saveBio = saveBio;
+window.saveQuote = saveQuote;
 </script>
 </body>
 </html>
