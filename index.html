@@ -329,6 +329,57 @@
   <footer class="footer">Test website © 2006-2026</footer>
 </div>
 
+  function setTheme(mode) {
+  if (mode === "dark") {
+    document.body.classList.add("dark-mode");
+    localStorage.setItem("theme", "dark");
+  } else {
+    document.body.classList.remove("dark-mode");
+    localStorage.setItem("theme", "light");
+  }
+}
+
+function setBackground() {
+  const url = document.getElementById("bgInput").value;
+  document.body.style.backgroundImage = `url('${url}')`;
+  localStorage.setItem("bg", url);
+}
+
+function setGradient() {
+  const c1 = document.getElementById("color1").value;
+  const c2 = document.getElementById("color2").value;
+
+  document.documentElement.style.setProperty('--topbar-c1', c1);
+  document.documentElement.style.setProperty('--topbar-c2', c2);
+
+  localStorage.setItem("grad1", c1);
+  localStorage.setItem("grad2", c2);
+}
+
+async function saveBio() {
+  const bio = document.getElementById("bioInput").value;
+
+  const snap = await getDocs(query(collection(db, "users"), where("user", "==", sessionUser)));
+
+  snap.forEach(async (docu) => {
+    await updateDoc(doc(db, "users", docu.id), { bio: bio });
+  });
+
+  alert("Bio saved!");
+}
+
+async function saveQuote() {
+  const quote = document.getElementById("quoteInput").value;
+
+  const snap = await getDocs(query(collection(db, "users"), where("user", "==", sessionUser)));
+
+  snap.forEach(async (docu) => {
+    await updateDoc(doc(db, "users", docu.id), { quote: quote });
+  });
+
+  alert("Quote saved!");
+}
+  
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
@@ -525,19 +576,47 @@ async function openProfileById(id) {
 function renderSettings() {
   const container = document.getElementById('settingsContent');
 
-  if (!sessionUser) {
-    container.innerHTML = "Login required.";
-    return;
+  if (!sessionUser) { 
+    container.innerHTML = "Login required."; 
+    return; 
   }
 
   container.innerHTML = `
-    <button class="btn" style="color:red;" onclick="logout()">Logout</button>
-  `;
-}
+    <div class="settings-section">
+      <span class="settings-label">Theme</span>
+      <button class="btn" onclick="setTheme('light')">Light</button>
+      <button class="btn" onclick="setTheme('dark')">Dark</button>
+    </div>
 
-function logout() {
-  localStorage.removeItem('active_session');
-  location.reload();
+    <div class="settings-section">
+      <span class="settings-label">Background</span>
+      <input type="text" id="bgInput" placeholder="Image URL">
+      <button class="btn" onclick="setBackground()">Apply</button>
+    </div>
+
+    <div class="settings-section">
+      <span class="settings-label">Topbar Gradient</span>
+      <input type="text" id="color1" placeholder="Color 1">
+      <input type="text" id="color2" placeholder="Color 2">
+      <button class="btn" onclick="setGradient()">Apply</button>
+    </div>
+
+    <div class="settings-section">
+      <span class="settings-label">Profile Bio</span>
+      <textarea id="bioInput"></textarea>
+      <button class="btn" onclick="saveBio()">Save</button>
+    </div>
+
+    <div class="settings-section">
+      <span class="settings-label">Quote</span>
+      <input type="text" id="quoteInput">
+      <button class="btn" onclick="saveQuote()">Save</button>
+    </div>
+
+    <div class="settings-section">
+      <button class="btn" style="color:red;" onclick="logout()">Logout</button>
+    </div>
+  `;
 }
 
 // ---------- GLOBAL FIX ----------
