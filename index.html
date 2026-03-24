@@ -1,618 +1,1037 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Test website - Build v6.6</title>
+
   <style>
+
     :root {
+
       --bg-color: #e5e5e5;
+
       --wrapper-bg: white;
+
       --text-color: black;
+
       --box-header-bg: #ddd;
+
       --nav-bg: #f2f2f2;
+
       --border-color: #999;
+
       --link-color: #0000cc;
+
       --topbar-c1: #cc0000; 
+
       --topbar-c2: #ff6600;
+
     }
+
+
 
     body.dark-mode {
+
       --bg-color: #1a1a1a;
+
       --wrapper-bg: #2d2d2d;
+
       --text-color: #eeeeee;
+
       --box-header-bg: #444;
+
       --nav-bg: #333;
+
       --border-color: #555;
+
       --link-color: #8888ff;
+
     }
+
+
 
     * { 
+
       font-family: 'Comic Sans MS', 'Comic Sans', cursive !important; 
+
       box-sizing: border-box; 
+
       margin: 0; 
+
       padding: 0; 
+
     }
+
+
 
     body {
+
       background-color: var(--bg-color);
+
       background-image: url('https://tr.rbxcdn.com/180DAY-e5aa3da117aad009a378e1e8912e248a/768/432/Model/Webp/noFilter');
+
       background-size: cover;
+
       background-position: center;
+
       background-attachment: fixed;
+
       color: var(--text-color);
+
       transition: background-image 0.5s ease;
+
     }
+
+
 
     .wrapper {
+
       width: 800px;
+
       max-width: 100%;
+
       margin: 0 auto;
+
       background: var(--wrapper-bg);
+
       border: 1px solid var(--border-color);
+
       min-height: 100vh;
+
       display: flex;
+
       flex-direction: column;
+
       box-shadow: 0 0 20px rgba(0,0,0,0.2);
+
     }
+
+
 
     .topbar {
+
       background: linear-gradient(to right, var(--topbar-c1), var(--topbar-c2));
+
       color: white;
+
       padding: 15px;
+
       font-size: 28px;
+
       display: flex;
+
       justify-content: space-between;
+
       align-items: center;
+
     }
+
+
 
     .nav { 
+
       background-color: var(--nav-bg); 
+
       border-bottom: 1px solid var(--border-color); 
+
       padding: 10px; 
+
       display: flex; 
+
       gap: 20px; 
+
     }
+
+
 
     .nav a { 
+
       text-decoration: underline; 
+
       color: var(--link-color); 
+
       font-size: 13px; 
+
       cursor: pointer; 
+
       font-weight: bold; 
+
     }
+
+
 
     .content { 
+
       padding: 25px; 
+
       flex: 1; 
+
     }
+
+
 
     .box { 
+
       border: 1px solid var(--border-color); 
+
       margin-bottom: 25px; 
+
       background: var(--wrapper-bg); 
+
     }
+
+
 
     .box-header { 
+
       background-color: var(--box-header-bg); 
+
       padding: 10px; 
+
       font-weight: bold; 
+
       border-bottom: 1px solid var(--border-color); 
+
       font-size: 14px; 
+
     }
+
+
 
     .box-content { 
+
       padding: 15px; 
+
     }
+
+
 
     .badge-container { 
+
       display: flex; 
+
       gap: 10px; 
+
       flex-wrap: wrap; 
+
       margin-top: 10px; 
+
     }
+
+
 
     .badge { 
+
       padding: 4px 10px; 
+
       border: 1px solid #999; 
+
       font-size: 11px; 
+
       font-weight: bold; 
+
       background: #f0f0f0; 
+
       color: black; 
+
       text-transform: uppercase; 
+
     }
+
+
 
     .badge-admin { 
+
       background: #ff0000; 
+
       color: #ffffff; 
+
       border-color: #cc0000; 
+
     }
+
+
 
     .profile-layout { 
+
       display: flex; 
+
       gap: 30px; 
+
     }
+
+
 
     .profile-sidebar { 
+
       width: 200px; 
+
       text-align: center; 
+
     }
+
+
 
     .avatar-main { 
+
       width: 130px; 
+
       height: 130px; 
+
       background: #ccc; 
+
       border: 2px solid #888; 
+
       display: flex; 
+
       align-items: center; 
+
       justify-content: center; 
+
       font-size: 50px; 
+
       margin: 0 auto 15px auto; 
+
       overflow: hidden; 
+
     }
+
     
+
     .inventory-grid { 
+
       display: grid; 
+
       grid-template-columns: repeat(4, 1fr); 
+
       gap: 10px; 
+
     }
+
+
 
     .inv-slot { 
+
       aspect-ratio: 1; 
+
       border: 1px dotted #bbb; 
+
       background: rgba(0,0,0,0.02); 
+
     }
+
+
 
     .settings-section { 
+
       margin-bottom: 20px; 
+
       padding-bottom: 15px; 
+
       border-bottom: 1px solid #eee; 
+
     }
+
+
 
     .settings-label { 
+
       font-weight: bold; 
+
       display: block; 
+
       margin-bottom: 8px; 
+
       font-size: 14px; 
+
     }
+
     
+
     .theme-grid { 
+
       display: grid; 
+
       grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+
       gap: 8px; 
+
     }
+
+
 
     input[type="text"], 
+
     input[type="password"], 
+
     textarea { 
+
       border: 1px solid var(--border-color); 
+
       padding: 8px; 
+
       width: 100%; 
+
       background: var(--wrapper-bg); 
+
       color: var(--text-color); 
+
       margin-top: 5px;
+
       margin-bottom: 10px;
+
     }
+
+
 
     .btn { 
+
       background: #f0f0f0; 
+
       border: 1px solid #999; 
+
       padding: 6px 12px; 
+
       cursor: pointer; 
+
       font-weight: bold; 
+
       font-size: 11px; 
+
       color: black; 
+
       margin-right: 5px;
+
     }
+
+
 
     .btn:hover {
+
       background: #e0e0e0;
+
     }
+
     
+
     .page { display: none; }
+
     .active { display: block; }
 
+
+
     .footer { 
+
       text-align: center; 
+
       font-size: 11px; 
+
       padding: 25px; 
+
       color: #888; 
+
       border-top: 1px solid var(--border-color); 
+
       background: var(--nav-bg); 
+
     }
+
   </style>
+
 </head>
+
 <body>
 
+
+
 <div class="wrapper">
+
   <header class="topbar">
+
     <div class="logo">Test website</div>
+
     <div style="font-size: 14px; font-weight: bold;">
+
       <span id="helloText">Hello, Guest!</span> | <span id="money">0</span> squar
+
     </div>
+
   </header>
 
+
+
   <nav class="nav">
+
     <a onclick="navigateTo('home')">Home</a>
+
     <a onclick="navigateTo('login')">Login</a>
+
     <a onclick="navigateTo('signup')">Signup</a>
+
     <a onclick="navigateTo('accounts')">Accounts</a>
+
     <a onclick="navigateTo('settings')">Settings</a>
+
   </nav>
 
+
+
   <main class="content">
+
     <section id="tab-home" class="page active">
+
       <div class="box">
+
         <div class="box-header">News</div>
+
         <div class="box-content">v6.6: Estrutura expandida e segura!</div>
+
       </div>
+
     </section>
+
+
 
     <section id="tab-login" class="page">
+
       <div class="box">
+
         <div class="box-header">Login</div>
+
         <div class="box-content">
+
           <form onsubmit="handleLogin(); return false;">
+
             User:
+
             <input type="text" id="lUser" required>
+
             Pass:
+
             <input type="password" id="lPass" required>
+
             <button type="submit" class="btn">Login</button>
+
           </form>
+
         </div>
+
       </div>
+
     </section>
+
+
 
     <section id="tab-signup" class="page">
+
       <div class="box">
+
         <div class="box-header">Signup</div>
+
         <div class="box-content">
+
           <form onsubmit="handleSignup(); return false;">
+
             User:
+
             <input type="text" id="sUser" required>
+
             Pass:
+
             <input type="password" id="sPass" required>
+
             <button type="submit" class="btn">Register</button>
+
           </form>
+
         </div>
+
       </div>
+
     </section>
+
+
 
     <section id="tab-accounts" class="page">
+
       <div class="box">
+
         <div class="box-header">Members</div>
+
         <div id="accountsList" class="box-content"></div>
+
       </div>
+
     </section>
+
+
 
     <section id="tab-profile" class="page">
+
       <div class="box">
+
         <div class="box-header">Profile</div>
+
         <div class="box-content profile-layout">
+
           <div class="profile-sidebar">
+
             <div class="avatar-main" id="pAvatar">?</div>
+
             <h2 id="pUsername">User</h2>
+
             <div id="pBio" style="font-size:12px; font-style:italic; margin-top:10px;"></div>
+
             <div id="pID" style="color:red; font-weight:bold; font-size:11px; margin-top:15px;">ID: 0</div>
+
           </div>
+
           <div style="flex:1;">
+
             <div class="box">
+
               <div class="box-header">Player Badges</div>
+
               <div class="badge-container" id="pBadges" style="padding:15px;"></div>
+
             </div>
+
             <div class="box">
+
               <div class="box-header">Inventory</div>
+
               <div class="inventory-grid" style="padding:15px;">
+
                 <div class="inv-slot"></div>
+
                 <div class="inv-slot"></div>
+
                 <div class="inv-slot"></div>
+
                 <div class="inv-slot"></div>
+
                 <div class="inv-slot"></div>
+
                 <div class="inv-slot"></div>
+
                 <div class="inv-slot"></div>
+
                 <div class="inv-slot"></div>
+
               </div>
+
             </div>
+
           </div>
+
         </div>
+
       </div>
+
     </section>
+
+
 
     <section id="tab-settings" class="page">
+
       <div class="box">
+
         <div class="box-header">Account Management</div>
+
         <div id="settingsContent" class="box-content"></div>
+
       </div>
+
     </section>
+
   </main>
 
-  <footer class="footer">Test website © 2026</footer>
+
+
+  <footer class="footer">Test website © 2006-2026</footer>
+
 </div>
- 
+
+
+
 <script type="module">
 
-async function saveQuote() {
-  const quote = document.getElementById("quoteInput").value;
-
-  const snap = await getDocs(query(collection(db, "users"), where("user", "==", sessionUser)));
-
-  snap.forEach(async (docu) => {
-    await updateDoc(doc(db, "users", docu.id), { quote: quote });
-  });
-
-  alert("Quote saved!");
-}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  getDocs, 
-  query, 
-  where,
-  updateDoc,
-  doc
-} from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+
 
 const firebaseConfig = {
-  apiKey: "SUA_KEY",
+
+  apiKey: "AIzaSyBp_JUN0fQBuoBSeDxTi4uVpRxFOQRaXL4",
+
   authDomain: "hifens.firebaseapp.com",
+
   projectId: "hifens",
+
   storageBucket: "hifens.firebasestorage.app",
+
   messagingSenderId: "438044966500",
+
   appId: "1:438044966500:web:f1044bcba3c185f72ba971"
+
 };
 
+
+
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
+
+
 
 let sessionUser = localStorage.getItem('active_session') || null;
 
-// ---------- START ----------
-window.onload = () => {
-  setupNav();
-  applySavedSettings();
-  checkUrlHash();
-  updateUI();
+
+
+window.onload = () => { 
+
+  checkUrlHash(); 
+
+  updateUI(); 
+
 };
+
+
 
 window.onhashchange = checkUrlHash;
 
-// ---------- NAV ----------
-function setupNav() {
-  document.querySelectorAll(".nav a")[0].onclick = () => navigateTo('home');
-  document.querySelectorAll(".nav a")[1].onclick = () => navigateTo('login');
-  document.querySelectorAll(".nav a")[2].onclick = () => navigateTo('signup');
-  document.querySelectorAll(".nav a")[3].onclick = () => navigateTo('accounts');
-  document.querySelectorAll(".nav a")[4].onclick = () => navigateTo('settings');
-}
+
 
 function checkUrlHash() {
-  const h = window.location.hash.replace('#', '');
 
-  if (!h) return navigateTo('home', false);
+  const h = window.location.hash;
 
-  if (h.startsWith('profile?id=')) {
-    openProfileById(h.split('=')[1]);
-  } else {
-    navigateTo(h, false);
-  }
+  if (h.startsWith('#profile?id=')) openProfileById(h.split('=')[1]);
+
+  else navigateTo(h.replace('#', '') || 'home', false);
+
 }
 
+
+
 function navigateTo(tabId, updateHash = true) {
+
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
 
-  const tab = document.getElementById('tab-' + tabId);
-  if (tab) tab.classList.add('active');
+  const t = document.getElementById('tab-' + tabId);
+
+  if (t) t.classList.add('active');
 
   if (updateHash) window.location.hash = tabId;
 
   if (tabId === 'accounts') renderAccounts();
+
   if (tabId === 'settings') renderSettings();
+
 }
 
-// ---------- SIGNUP ----------
+
+
+// SIGNUP
+
 async function handleSignup() {
+
   const u = document.getElementById('sUser').value.trim();
+
   const p = document.getElementById('sPass').value;
 
-  if (p.length < 4) return alert("Senha muito curta!");
 
-  const snap = await getDocs(query(collection(db, "users"), where("user", "==", u)));
 
-  if (!snap.empty) return alert("Taken!");
+  if (p.length < 4) {
+
+    alert("Senha muito curta!");
+
+    return;
+
+  }
+
+
+
+  const q = query(collection(db, "users"), where("user", "==", u));
+
+  const snap = await getDocs(q);
+
+
+
+  if (!snap.empty) {
+
+    alert("Taken!");
+
+    return;
+
+  }
+
+
 
   await addDoc(collection(db, "users"), {
+
     user: u,
+
     pass: p,
+
     bio: "",
-    quote: "",
+
     money: 100
+
   });
 
+
+
   sessionUser = u;
+
   localStorage.setItem('active_session', u);
 
+
+
   updateUI();
+
   navigateTo('home');
+
 }
 
-// ---------- LOGIN ----------
+
+
+// LOGIN
+
 async function handleLogin() {
+
   const u = document.getElementById('lUser').value.trim();
+
   const p = document.getElementById('lPass').value;
 
-  const snap = await getDocs(query(
-    collection(db, "users"),
-    where("user", "==", u),
-    where("pass", "==", p)
-  ));
 
-  if (snap.empty) return alert("Wrong!");
+
+  const q = query(collection(db, "users"),
+
+    where("user", "==", u),
+
+    where("pass", "==", p)
+
+  );
+
+
+
+  const snap = await getDocs(q);
+
+
+
+  if (snap.empty) {
+
+    alert("Wrong!");
+
+    return;
+
+  }
+
+
 
   sessionUser = u;
+
   localStorage.setItem('active_session', u);
 
+
+
   updateUI();
+
   navigateTo('home');
+
 }
 
-// ---------- UI ----------
+
+
+// UI
+
 async function updateUI() {
+
   if (!sessionUser) {
+
     document.getElementById('helloText').innerText = "Hello, Guest!";
+
     document.getElementById('money').innerText = "0";
+
     return;
+
   }
 
-  const snap = await getDocs(query(collection(db, "users"), where("user", "==", sessionUser)));
+
+
+  const q = query(collection(db, "users"), where("user", "==", sessionUser));
+
+  const snap = await getDocs(q);
+
+
 
   snap.forEach(doc => {
+
     const data = doc.data();
+
     document.getElementById('helloText').innerText = "Hello, " + data.user + "!";
+
     document.getElementById('money').innerText = data.money || 0;
+
   });
+
 }
 
-// ---------- ACCOUNTS ----------
+
+
+// ACCOUNTS
+
 async function renderAccounts() {
+
   const container = document.getElementById('accountsList');
+
   container.innerHTML = "";
 
+
+
   const snap = await getDocs(collection(db, "users"));
+
+
 
   let i = 1;
 
+
+
   snap.forEach(doc => {
+
     const acc = doc.data();
 
+
+
     container.innerHTML += `
-      <div>
-        <span style="color:blue; cursor:pointer;"
-          onclick="window.location.hash='profile?id=${i}'">${acc.user}</span>
-        <div>ID: ${i}</div>
-      </div>
-    `;
+
+      <div class="user-card">
+
+        <div class="avatar-mini">${acc.user[0].toUpperCase()}</div>
+
+        <div>
+
+          <span style="color:blue; text-decoration:underline; cursor:pointer; font-weight:bold;" 
+
+                onclick="window.location.hash='profile?id=${i}'">${acc.user}</span>
+
+          <div style="font-size:10px; color:red; font-weight:bold;">ID: ${i}</div>
+
+        </div>
+
+      </div>`;
+
     i++;
+
   });
+
 }
 
-// ---------- PROFILE ----------
+
+
+// PROFILE
+
 async function openProfileById(id) {
+
   const snap = await getDocs(collection(db, "users"));
+
+
 
   let i = 1;
 
+
+
   snap.forEach(doc => {
+
     if (i == id) {
+
       const u = doc.data();
 
+
+
       document.getElementById('pUsername').innerText = u.user;
-      document.getElementById('pBio').innerText = u.bio || "No bio.";
-      document.getElementById('pAvatar').innerText = u.user[0].toUpperCase();
+
       document.getElementById('pID').innerText = "ID: " + i;
 
+      document.getElementById('pBio').innerText = u.bio || "No bio set.";
+
+      document.getElementById('pAvatar').innerText = u.user[0].toUpperCase();
+
+
+
+      const bContainer = document.getElementById('pBadges');
+
+
+
+      if (i === 1) {
+
+        bContainer.innerHTML = '<div class="badge badge-admin">Admin</div>';
+
+      } else {
+
+        bContainer.innerHTML = '<div class="badge">Player</div>';
+
+      }
+
+
+
       navigateTo('profile', false);
+
     }
+
     i++;
+
   });
+
 }
 
-// ---------- SETTINGS ----------
+
+
+// SETTINGS (mantido)
+
 function renderSettings() {
-  const c = document.getElementById('settingsContent');
 
-  if (!sessionUser) return c.innerHTML = "Login required.";
+  const container = document.getElementById('settingsContent');
 
-  c.innerHTML = `
-    <button onclick="setTheme('light')">Light</button>
-    <button onclick="setTheme('dark')">Dark</button>
+  if (!sessionUser) { 
 
-    <input id="bgInput" placeholder="Background URL">
-    <button onclick="setBackground()">Apply BG</button>
+    container.innerHTML = "Login required."; 
 
-    <input id="color1" placeholder="Color 1">
-    <input id="color2" placeholder="Color 2">
-    <button onclick="setGradient()">Apply Gradient</button>
+    return; 
 
-    <textarea id="bioInput"></textarea>
-    <button onclick="saveBio()">Save Bio</button>
-
-    <input id="quoteInput">
-    <button onclick="saveQuote()">Save Quote</button>
-
-    <button onclick="logout()">Logout</button>
-  `;
-}
-
-// ---------- SETTINGS FUNCTIONS ----------
-
-  function setTheme(mode) {
-  document.body.classList.toggle("dark-mode", mode === "dark");
-  localStorage.setItem("theme", mode);
-}
-  
-function setBackground() {
-  const url = document.getElementById("bgInput").value;
-  document.body.style.backgroundImage = `url('${url}')`;
-  localStorage.setItem("bg", url);
-}
-
-function setGradient() {
-  const c1 = document.getElementById("color1").value;
-  const c2 = document.getElementById("color2").value;
-
-  document.documentElement.style.setProperty('--topbar-c1', c1);
-  document.documentElement.style.setProperty('--topbar-c2', c2);
-
-  localStorage.setItem("grad1", c1);
-  localStorage.setItem("grad2", c2);
-}
-
-async function saveBio() {
-  const bio = document.getElementById("bioInput").value;
-
-  const snap = await getDocs(query(collection(db, "users"), where("user", "==", sessionUser)));
-
-  snap.forEach(async (d) => {
-    await updateDoc(doc(db, "users", d.id), { bio });
-  });
-
-  alert("Saved!");
-}
-
-// ---------- LOAD SETTINGS ----------
-function applySavedSettings() {
-  const theme = localStorage.getItem("theme");
-  if (theme) setTheme(theme);
-
-  const bg = localStorage.getItem("bg");
-  if (bg) document.body.style.backgroundImage = `url('${bg}')`;
-
-  const g1 = localStorage.getItem("grad1");
-  const g2 = localStorage.getItem("grad2");
-
-  if (g1 && g2) {
-    document.documentElement.style.setProperty('--topbar-c1', g1);
-    document.documentElement.style.setProperty('--topbar-c2', g2);
   }
+
+
+
+  container.innerHTML = `
+
+    <button class="btn" style="color:red;" onclick="logout()">Logout</button>
+
+  `;
+
 }
 
-// ---------- LOGOUT ----------
-function logout() {
-  localStorage.removeItem('active_session');
-  location.reload();
+
+
+function logout() { 
+
+  localStorage.removeItem('active_session'); 
+
+  location.reload(); 
+
 }
 
-// ---------- GLOBAL ----------
-window.handleSignup = handleSignup;
-window.handleLogin = handleLogin;
-window.logout = logout;
-window.setTheme = setTheme;
-window.setBackground = setBackground;
-window.setGradient = setGradient;
-window.saveBio = saveBio;
-window.saveQuote = saveQuote;
 </script>
+
 </body>
+
 </html>
